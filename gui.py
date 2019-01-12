@@ -10,11 +10,10 @@ invalid_dir_errormsg = "Missing '/' or '\\' at the end of the directory path. Tr
 # Create a dialog with an input box and a button for user inputs
 root = Tk()
 root.title("Keyword Locator")
-#root.geometry("620x70")
+# root.geometry("620x70")
 
 
 def error_handling(directory, keyword):
-    input_error_exist = True
     if (not directory) or (not keyword):
         insuf_input_label.grid(row=2, column=0)
         return True
@@ -22,14 +21,10 @@ def error_handling(directory, keyword):
         insuf_input_label.grid_remove()
 
     if (not directory.endswith("/")) and (not directory.endswith("\\")):
-        print(directory)
-        print("cond1: " + str(directory.endswith("/")))
-        print("cond2: " + str(directory.endswith("\\")))
         invalid_dir_label.grid(row=2, column=0)
         return True
     else:
         invalid_dir_label.grid_remove()
-        input_error_exist = False
     return False
 
 
@@ -39,9 +34,8 @@ def search():
 
     # Error handling
     error_exist = error_handling(directory, keyword)
-    if error_exist:
-        print("Input error exists!")
-    else:
+    
+    if not error_exist:
         files = os.listdir(directory)
         text_runs = []
         for file in files:
@@ -55,26 +49,27 @@ def search():
                             continue
                         for paragraph in shape.text_frame.paragraphs:
                             for run in paragraph.runs:
-                                if run.text.find(keyword) != -1:
+                                if run.text.lower().find(keyword.lower()) != -1:
                                     text_runs.append(file+"-slide "+str(i))
-    win = Tk()
-    win.title('Result')
-    win.geometry('200x400') # Size 200, 400
+        win = Tk()
+        win.title('Resulting slide number that contains word "' + keyword + '"')
+        win.geometry('500x400') # Size 500, 400
 
-    scrollbar = Scrollbar(win)
-    scrollbar.pack(side=RIGHT, fill=Y)
+        scrollbar = Scrollbar(win)
+        scrollbar.pack(side=RIGHT, fill=Y)
 
-    listbox = Listbox(win, yscrollcommand=scrollbar.set)
-    for x in text_runs:
-        listbox.insert(END, x)
-    listbox.pack(side=LEFT, fill=BOTH)
+        listbox = Listbox(win, width=500, yscrollcommand=scrollbar.set)
+        for x in text_runs:
+            listbox.insert(END, x)
+        listbox.pack(side=LEFT, fill=BOTH)
 
-    scrollbar.config(command=listbox.yview)
+        scrollbar.config(command=listbox.yview)
 
-    mainloop()
+        mainloop()
 
 
 def cancel():
+    print("Exit!")
     sys.exit()
 
 
