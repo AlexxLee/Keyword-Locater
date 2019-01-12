@@ -10,6 +10,7 @@ invalid_dir_errormsg = "Missing '/' or '\\' at the end of the directory path. Tr
 # Create a dialog with an input box and a button for user inputs
 root = Tk()
 root.title("Keyword Locator")
+#root.geometry("620x70")
 
 
 def error_handling(directory, keyword):
@@ -21,6 +22,7 @@ def error_handling(directory, keyword):
         insuf_input_label.grid_remove()
 
     if (not directory.endswith("/")) and (not directory.endswith("\\")):
+        print(directory)
         print("cond1: " + str(directory.endswith("/")))
         print("cond2: " + str(directory.endswith("\\")))
         invalid_dir_label.grid(row=2, column=0)
@@ -32,8 +34,8 @@ def error_handling(directory, keyword):
 
 
 def search():
-    directory = path_entry.get()
-    keyword = kw_entry.get()
+    directory = path_entry.get("1.0",'end-1c')
+    keyword = kw_entry.get("1.0",'end-1c')
 
     # Error handling
     error_exist = error_handling(directory, keyword)
@@ -55,8 +57,21 @@ def search():
                             for run in paragraph.runs:
                                 if run.text.find(keyword) != -1:
                                     text_runs.append(file+"-slide "+str(i))
-        for x in text_runs:
-            print(x)
+    win = Tk()
+    win.title('Result')
+    win.geometry('200x400') # Size 200, 400
+
+    scrollbar = Scrollbar(win)
+    scrollbar.pack(side=RIGHT, fill=Y)
+
+    listbox = Listbox(win, yscrollcommand=scrollbar.set)
+    for x in text_runs:
+        listbox.insert(END, x)
+    listbox.pack(side=LEFT, fill=BOTH)
+
+    scrollbar.config(command=listbox.yview)
+
+    mainloop()
 
 
 def cancel():
@@ -65,16 +80,15 @@ def cancel():
 
 # Path entry
 path_label = Label(root, text="Enter the absolute path for a directory:")
-path_entry = Entry(root)
+path_entry = Text(root, height=1, width=50)
 path_label.grid(row=0, column=0)
 path_entry.grid(row=0, column=1)
 
 # Keyword entry
 kw_label = Label(root, text="Enter the keyword:")
-kw_entry = Entry(root)
+kw_entry = Text(root, height=1, width=50)
 kw_label.grid(row=1, column=0)
 kw_entry.grid(row=1, column=1)
-
 
 # Error message
 insuf_input_label = Label(root, text=insuf_input_errormsg, fg="red")
