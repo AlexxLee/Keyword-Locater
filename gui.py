@@ -5,7 +5,7 @@ import sys, os
 # Global variables
 insuf_input_errormsg = "Insufficient input. Try again."
 invalid_dir_errormsg = "Missing '/' or '\\' at the end of the directory path. Try again."
-
+results = []
 
 # Create a dialog with an input box and a button for user inputs
 root = Tk()
@@ -34,6 +34,7 @@ def error_handling(directory, keyword):
 
 
 def search():
+    #print(len(results))
     directory = path_entry.get("1.0",'end-1c')
     keyword = kw_entry.get("1.0",'end-1c')
 
@@ -42,21 +43,11 @@ def search():
     if error_exist:
         print("Input error exists!")
     else:
-        files = os.listdir(directory)
-        text_runs = []
-        for file in files:
-            if file.endswith('.pptx'):
-                the_file = Presentation(directory + file)
-                i = 0
-                for slide in the_file.slides:
-                    i = i+1
-                    for shape in slide.shapes:
-                        if not shape.has_text_frame:
-                            continue
-                        for paragraph in shape.text_frame.paragraphs:
-                            for run in paragraph.runs:
-                                if run.text.find(keyword) != -1:
-                                    text_runs.append(file+"-slide "+str(i))
+        getList(directory, keyword)
+        #print(results[0]+"qweqwe")
+        # for x in results:
+        #      print(x)
+
     win = Tk()
     win.title('Result')
     win.geometry('200x400') # Size 200, 400
@@ -65,13 +56,38 @@ def search():
     scrollbar.pack(side=RIGHT, fill=Y)
 
     listbox = Listbox(win, yscrollcommand=scrollbar.set)
-    for x in text_runs:
+    for x in results:
         listbox.insert(END, x)
+    results.clear()
     listbox.pack(side=LEFT, fill=BOTH)
 
     scrollbar.config(command=listbox.yview)
 
     mainloop()
+
+def getList(directory, keyword):
+    files = os.listdir(directory)
+    for file in files:
+        if os.path.isdir(os.path.join(os.path.abspath(directory), file)):
+            subdir = os.path.join(os.path.abspath(directory), file)+"\\"
+            # print(subdir)
+            getList(subdir, keyword)
+        if file.endswith('.pptx'):
+            # print(file)
+            the_file = Presentation(directory + file)
+            i = 0
+            for slide in the_file.slides:
+                i = i+1
+                for shape in slide.shapes:
+                    if not shape.has_text_frame:
+                        continue
+                    for paragraph in shape.text_frame.paragraphs:
+                        for run in paragraph.runs:
+                            if run.text.find(keyword) != -1:
+                                #print(file+"-slide "+str(i))
+                                results.append(file+"-slide "+str(i))
+
+
 
 
 def cancel():
@@ -102,3 +118,5 @@ submit_btn.grid(row=3, column=0)
 exit_btn.grid(row=3, column=1)
 
 root.mainloop()
+
+
