@@ -10,10 +10,11 @@ results = []
 # Create a dialog with an input box and a button for user inputs
 root = Tk()
 root.title("Keyword Locator")
-# root.geometry("620x70")
+#root.geometry("620x70")
 
 
 def error_handling(directory, keyword):
+    input_error_exist = True
     if (not directory) or (not keyword):
         insuf_input_label.grid(row=2, column=0)
         return True
@@ -21,10 +22,14 @@ def error_handling(directory, keyword):
         insuf_input_label.grid_remove()
 
     if (not directory.endswith("/")) and (not directory.endswith("\\")):
+        print(directory)
+        print("cond1: " + str(directory.endswith("/")))
+        print("cond2: " + str(directory.endswith("\\")))
         invalid_dir_label.grid(row=2, column=0)
         return True
     else:
         invalid_dir_label.grid_remove()
+        input_error_exist = False
     return False
 
 
@@ -47,8 +52,8 @@ def search():
     win.title('Result')
     win.geometry('200x400') # Size 200, 400
 
-        scrollbar = Scrollbar(win)
-        scrollbar.pack(side=RIGHT, fill=Y)
+    scrollbar = Scrollbar(win)
+    scrollbar.pack(side=RIGHT, fill=Y)
 
     listbox = Listbox(win, yscrollcommand=scrollbar.set)
     for x in results:
@@ -56,9 +61,9 @@ def search():
     results.clear()
     listbox.pack(side=LEFT, fill=BOTH)
 
-        scrollbar.config(command=listbox.yview)
+    scrollbar.config(command=listbox.yview)
 
-        mainloop()
+    mainloop()
 
 def getList(directory, keyword):
     files = os.listdir(directory)
@@ -86,7 +91,6 @@ def getList(directory, keyword):
 
 
 def cancel():
-    print("Exit!")
     sys.exit()
 
 
@@ -114,3 +118,5 @@ submit_btn.grid(row=3, column=0)
 exit_btn.grid(row=3, column=1)
 
 root.mainloop()
+
+
