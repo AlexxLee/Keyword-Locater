@@ -7,3 +7,4 @@ Locate a keyword within a directory. Hope it can help on my final exams.
 ## TODO
 * Resulting panels show a link to open the file
 * Locate a keyword in a nested directory  
+* More error-handlings
